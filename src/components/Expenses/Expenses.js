@@ -1,13 +1,32 @@
 import ExpenseItem from "./ExpenseItem";
 import "./Expenses.css";
+import "./ExpenseFilter";
+import ExpenseFilter from "./ExpenseFilter";
+import React, { useState } from "react";
+import ExpensesChart from "./ExpensesChart";
 
 function Expenses(props){
+    
+    const [filterYear, setFilterYear] = useState("2020");
+
+    const filterHandler = filterdData => {
+        setFilterYear(filterdData);
+    };
+
+    const filteredExpenses = props.expenses.filter(expense => {
+        return expense.date.getFullYear().toString() === filterYear;
+    });
+
     return (
         <div className="expenses">
-            <ExpenseItem date={props.expenses[0].date} title={props.expenses[0].title} amount={props.expenses[0].amount}/>
-            <ExpenseItem date={props.expenses[1].date} title={props.expenses[1].title} amount={props.expenses[1].amount}/>
-            <ExpenseItem date={props.expenses[2].date} title={props.expenses[2].title} amount={props.expenses[2].amount}/>
-            <ExpenseItem date={props.expenses[3].date} title={props.expenses[3].title} amount={props.expenses[3].amount}/>
+            <ExpenseFilter onFilter={filterHandler}/>
+            <ExpensesChart expenses={filteredExpenses}/>
+            {filteredExpenses.length === 0 ? <p className="expenses-list__fallback">No Expense Found.</p> : 
+                 filteredExpenses.map(expense => <ExpenseItem 
+                        key={expense.id}
+                        date={expense.date} 
+                        title={expense.title} 
+                        amount={expense.amount}/>)};
         </div>
     );
 }
